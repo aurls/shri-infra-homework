@@ -39,12 +39,10 @@ jobs:
         run: |
           git checkout main
           git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
-          git tag
         
       - name: Create release branch
         run: |
           git checkout -b release/$RELEASE_ID
-          git branch
         
       - name: Build Docker image
         run: |
@@ -72,7 +70,7 @@ jobs:
           echo "**Version:** $RELEASE_ID  " >> $FILE
           git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
           echo "________________________  " >> $FILE
-          $TEMP > $FILE
+          cat $TEMP > $FILE
           rm $TEMP
         env:
           FILE: CHANGELOG.md
