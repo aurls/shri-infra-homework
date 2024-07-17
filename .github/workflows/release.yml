@@ -46,22 +46,32 @@ jobs:
           git checkout -b release/$RELEASE_ID
           git branch
         
-  
-      # - name: Build Docker image
-      #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
+      - name: Build Docker image
+        run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
         run: |
           touch $FILE
-          echo "Date: $(date +%Y-%m-%d)  " >> $FILE
-          echo "Triggering actor: $USER  " >> $FILE
-          echo "Date: $(date +%Y-%m-%d)  " >> $FILE
-          echo "Docker image URL: cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  " >> $FILE
-          echo "Last commits:  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
+          echo "**Version:** $RELEASE_ID  " >> $FILE
+          echo "**Date:** $(date +%Y-%m-%d)  " >> $FILE
+          echo "**Triggering actor:** $USER  " >> $FILE
+          echo "**Docker image:** cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  " >> $FILE
+          echo "**Last commits:**  " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
           gh issue create --title "Release $RELEASE_ID" --body-file $FILE
           rm $FILE
         env:
           FILE: issue.txt
           
-          
+      - name: Update CHANGELOG.md
+        run: |
+          touch $TEMP
+          cat $FILE > $TEMP
+          touch $FILE
+          echo "**Version:** $RELEASE_ID  " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
+          $TEMP >> $FILE
+          rm $TEMP
+        env:
+          FILE: CHANGELOG.md
+          TEMP: temp.md
