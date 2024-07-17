@@ -10,6 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
+      USER: ${{ github.triggering_actor }}
       RELEASE_ID: ${{ github.run_number }}
       REGISTRY_ID: rgtgtrtrgtrgtrbt
     steps:
@@ -28,6 +29,11 @@ jobs:
           npm run lint
           npm run test
 
+      - name: Update git config
+        run: |
+          git config --global user.name "$USER"
+          git config --global user.email $USER@gmail.com
+
       - name: Create tag
         run: |
           git checkout main
@@ -40,4 +46,4 @@ jobs:
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
-        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering_actor - ${{ github.triggering_actor }}\n\nVersion - $RELEASE_ID\n\n"
+        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering actor - $USER\n\nVersion - $RELEASE_ID\n\n"
