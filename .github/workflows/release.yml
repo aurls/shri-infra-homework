@@ -39,7 +39,7 @@ jobs:
         run: |
           git checkout main
           git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
-          git tags
+          git tag
         
       - name: Create release branch
         run: |
