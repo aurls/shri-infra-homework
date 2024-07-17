@@ -48,7 +48,7 @@ jobs:
         
       - name: Build Docker image
         run: |
-          docker build . -t cr.yandex/$REGISTRY_ID/app:${{ env.RELEASE_ID }} -t cr.yandex/$REGISTRY_ID/app:${{ env.RELEASE_ID }}_latest
+          docker build . -t cr.yandex/${{ env.REGISTRY_ID }}/app:${{ env.RELEASE_ID }} -t cr.yandex/${{ env.REGISTRY_ID }}/app:${{ env.RELEASE_ID }}_latest
 
       - name: Create GitHub issue
         run: |
@@ -71,7 +71,8 @@ jobs:
           touch $FILE
           echo "**Version:** $RELEASE_ID  " >> $FILE
           git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
-          $TEMP >> $FILE
+          echo "________________________  " >> $FILE
+          $TEMP > $FILE
           rm $TEMP
         env:
           FILE: CHANGELOG.md
