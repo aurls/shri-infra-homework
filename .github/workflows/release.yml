@@ -40,14 +40,19 @@ jobs:
           git checkout main
           git checkout -b release/$RELEASE_ID
         
-      - name: Create release
-        run: gh release create $RELEASE_ID --target release/$RELEASE_ID
+      - name: Create tag
+        run: git tag v$RELEASE_ID -m "v$RELEASE_ID"
   
       # - name: Build Docker image
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
-        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)"\
+        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $DATE"\
+          "Version - $RELEASE_ID"\
           "Triggering actor - $USER"\
-          "Version - $RELEASE_ID\n\n"
+          "Last commits - $COMMITS"\
+          "Image URL - cr.yandex/$REGISTRY_ID/app:$RELEASE_ID"
+        env:
+          DATE: ${{ date +%Y-%m-%d }}
+          COMMITS: ${{ git log --pretty=format:"%h - %an, %ar - %s" -10 }}
           
