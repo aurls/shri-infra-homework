@@ -13,7 +13,6 @@ jobs:
       USER: ${{ github.triggering_actor }}
       RELEASE_ID: ${{ github.run_number }}
       REGISTRY_ID: rgtgtrtrgtrgtrbt
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,3 +47,5 @@ jobs:
 
       - name: Create GitHub issue
         run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering actor - $USER\n\nVersion - $RELEASE_ID\n\n"
+        env: 
+          GH_TOKEN: ${{ github.token }}
