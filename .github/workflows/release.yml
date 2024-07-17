@@ -56,7 +56,7 @@ jobs:
           echo "**Triggering actor:** $USER  " >> $FILE
           echo "**Docker image:** cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  " >> $FILE
           echo "**Last commits:**  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
+          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
           gh issue create --title "Release $RELEASE_ID" --body-file $FILE
           rm $FILE
         env:
@@ -68,9 +68,10 @@ jobs:
           cat $FILE > $TEMP
           touch $FILE
           echo "**Version:** $RELEASE_ID  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s" -10 > $FILE
+          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
           echo "________________________  " >> $FILE
-          cat $TEMP > $FILE
+          cat $TEMP >> $FILE
+          cat $FILE
           rm $TEMP
         env:
           FILE: CHANGELOG.md
