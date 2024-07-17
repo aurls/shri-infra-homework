@@ -1,0 +1,43 @@
+name: release
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  issues: write 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_ID: ${{ github.run_number }}
+      REGISTRY_ID: rgtgtrtrgtrgtrbt
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linters and tests
+        run: |
+          npm run lint
+          npm run test
+
+      - name: Create tag
+        run: |
+          git checkout main
+          git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
+
+      - name: Create release branch
+        run: git checkout -b release/$RELEASE_ID
+
+      # - name: Build Docker image
+      #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
+
+      - name: Create GitHub issue
+        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering_actor - ${{ github.triggering_actor }}\n\nVersion - $RELEASE_ID\n\n"
