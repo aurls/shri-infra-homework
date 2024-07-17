@@ -13,6 +13,7 @@ jobs:
       USER: ${{ github.triggering_actor }}
       RELEASE_ID: ${{ github.run_number }}
       REGISTRY_ID: rgtgtrtrgtrgtrbt
+      GH_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,19 +34,20 @@ jobs:
         run: |
           git config --global user.name "$USER"
           git config --global user.email $USER@gmail.com
-
-      - name: Create tag
+        
+      - name: Create release branch
         run: |
           git checkout main
-          git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
-
-      - name: Create release branch
-        run: git checkout -b release/$RELEASE_ID
-
+          git checkout -b release/$RELEASE_ID
+        
+      - name: Create release
+        run: gh release create v$RELEASE_ID --target release/$RELEASE_ID
+  
       # - name: Build Docker image
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
-        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering actor - $USER\n\nVersion - $RELEASE_ID\n\n"
-        env: 
-          GH_TOKEN: ${{ secrets.TOKEN }}
+        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)"\
+          "Triggering actor - $USER"\
+          "Version - $RELEASE_ID\n\n"
+          
