@@ -35,21 +35,33 @@ jobs:
           git config --global user.name "$USER"
           git config --global user.email $USER@gmail.com
         
-      - name: Create release branch
+      - name: Create tag
         run: |
           git checkout main
-          git checkout -b release/$RELEASE_ID
+          git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
+          git tags
         
-      - name: Create tag
-        run: git tag v$RELEASE_ID -m "v$RELEASE_ID"
+      - name: Create release branch
+        run: |
+          git checkout -b release/$RELEASE_ID
+          git branch
+        
   
       # - name: Build Docker image
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
-        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)"\
-          "Version - $RELEASE_ID"\
-          "Triggering actor - $USER"\
-          "Last commits - $(git log --pretty=format:"%h - %an, %ar - %s" -10)"\
-          "Image URL - cr.yandex/$REGISTRY_ID/app:$RELEASE_ID"
+        run: |
+          touch $FILE
+          echo "Date: $(date +%Y-%m-%d)  " >> $FILE
+          echo "Triggering actor: $USER  " >> $FILE
+          echo "Date: $(date +%Y-%m-%d)  " >> $FILE
+          echo "Docker image URL: cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  " >> $FILE
+          echo "Last commits:  " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
+          gh issue create --title "Release $RELEASE_ID" --body-file $FILE
+          rm $FILE
+        env:
+          FILE: issue.txt
+          
           
