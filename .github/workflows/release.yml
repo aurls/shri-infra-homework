@@ -47,12 +47,9 @@ jobs:
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
 
       - name: Create GitHub issue
-        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $DATE"\
+        run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)"\
           "Version - $RELEASE_ID"\
           "Triggering actor - $USER"\
-          "Last commits - $COMMITS"\
+          "Last commits - $(git log --pretty=format:"%h - %an, %ar - %s" -10)"\
           "Image URL - cr.yandex/$REGISTRY_ID/app:$RELEASE_ID"
-        env:
-          DATE: ${{ date +%Y-%m-%d }}
-          COMMITS: ${{ git log --pretty=format:"%h - %an, %ar - %s" -10 }}
           
