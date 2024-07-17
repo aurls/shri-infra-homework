@@ -47,7 +47,8 @@ jobs:
           git branch
         
       - name: Build Docker image
-        run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
+        run: |
+          docker build . -t cr.yandex/$REGISTRY_ID/app:${{ env.RELEASE_ID }} -t cr.yandex/$REGISTRY_ID/app:${{ env.RELEASE_ID }}_latest
 
       - name: Create GitHub issue
         run: |
