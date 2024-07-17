@@ -41,7 +41,7 @@ jobs:
           git checkout -b release/$RELEASE_ID
         
       - name: Create release
-        run: gh release create v$RELEASE_ID --target release/$RELEASE_ID
+        run: gh release create $RELEASE_ID --target release/$RELEASE_ID
   
       # - name: Build Docker image
       #   run: docker build . -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID -t cr.yandex/$REGISTRY_ID/app:$RELEASE_ID_latest
