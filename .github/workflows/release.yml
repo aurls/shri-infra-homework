@@ -48,4 +48,4 @@ jobs:
       - name: Create GitHub issue
         run: gh issue create --title "Release v$RELEASE_ID" --body "Date - $(date +%Y-%m-%d)\n\nTriggering actor - $USER\n\nVersion - $RELEASE_ID\n\n"
         env: 
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
