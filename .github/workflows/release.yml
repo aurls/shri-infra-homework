@@ -12,7 +12,7 @@ jobs:
     env:
       USER: ${{ github.triggering_actor }}
       RELEASE: ${{ github.run_number }}
-      REGISTRY: cr.yandex/REGISTRY/app
+      REGISTRY: cr.yandex/registry/app
       GH_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - uses: actions/checkout@v4
