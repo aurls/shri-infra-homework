@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       USER: ${{ github.triggering_actor }}
-      RELEASE_ID: ${{ github.run_number }}
-      REGISTRY_ID: rgtgtrtrgtrgtrbt
+      RELEASE: ${{ github.run_number }}
+      REGISTRY: cr.yandex/REGISTRY/app
       GH_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -38,25 +38,25 @@ jobs:
       - name: Create tag
         run: |
           git checkout main
-          git tag -a v$RELEASE_ID -m "v$RELEASE_ID"
+          git tag -a v$RELEASE -m "v$RELEASE"
         
       - name: Create release branch
         run: |
-          git checkout -b release/$RELEASE_ID
+          git checkout -b release/$RELEASE
         
       - name: Build Docker image
         run: |
-          docker build . -t cr.yandex/${{ env.REGISTRY_ID }}/app:${{ env.RELEASE_ID }} -t cr.yandex/${{ env.REGISTRY_ID }}/app:${{ env.RELEASE_ID }}_latest
+          docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
 
       - name: Create GitHub issue
         run: |
           touch $FILE
-          echo "**Version:** $RELEASE_ID  " >> $FILE
+          echo "**Version:** $RELEASE  " >> $FILE
           echo "**Date:** $(date +%Y-%m-%d)  " >> $FILE
           echo "**Triggering actor:** $USER  " >> $FILE
-          echo "**Docker image:** cr.yandex/$REGISTRY_ID/app:$RELEASE_ID $(($RELEASE_ID - 1))" >> $FILE
+          echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
+          git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           gh issue create --title "Release $RELEASE_ID" --body-file $FILE
           rm $FILE
         env:
@@ -67,12 +67,12 @@ jobs:
           touch $TEMP
           cat $FILE > $TEMP
           touch $FILE
-          echo "**Version:** $RELEASE_ID  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
+          echo "Version: $RELEASE  " >> $FILE
+          git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           echo "    " >> $FILE
           cat $TEMP >> $FILE
           cat $FILE
           rm $TEMP
         env:
           FILE: CHANGELOG.md
-          TEMP: temp.md
+          TEMP: TEMP_CHANGELOG.md
