@@ -54,7 +54,7 @@ jobs:
           echo "**Version:** $RELEASE_ID  " >> $FILE
           echo "**Date:** $(date +%Y-%m-%d)  " >> $FILE
           echo "**Triggering actor:** $USER  " >> $FILE
-          echo "**Docker image:** cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  " >> $FILE
+          echo "**Docker image:** cr.yandex/$REGISTRY_ID/app:$RELEASE_ID  $($RELEASE_ID - 1)" >> $FILE
           echo "**Last commits:**  " >> $FILE
           git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
           gh issue create --title "Release $RELEASE_ID" --body-file $FILE
@@ -69,7 +69,7 @@ jobs:
           touch $FILE
           echo "**Version:** $RELEASE_ID  " >> $FILE
           git log --pretty=format:"%h - %an, %ar - %s" -10 >> $FILE
-          echo "________________________  " >> $FILE
+          echo "    " >> $FILE
           cat $TEMP >> $FILE
           cat $FILE
           rm $TEMP
