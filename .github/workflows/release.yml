@@ -56,8 +56,8 @@ jobs:
           echo "**Triggering actor:** $USER  " >> $FILE
           echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
-          # git log v$(($RELEASE - 1)) ..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
-          gh issue create --title "Release $RELEASE_ID" --body-file $FILE
+          git log v$(($RELEASE - 1)) ..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
+          gh issue create --title "Release $RELEASE" --body-file $FILE
           rm $FILE
         env:
           FILE: issue.txt
@@ -66,9 +66,8 @@ jobs:
         run: |
           touch $TEMP
           cat $FILE > $TEMP
-          touch $FILE
           echo "Version: $RELEASE  " >> $FILE
-          # git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
+          git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           echo "    " >> $FILE
           cat $TEMP >> $FILE
           cat $FILE
