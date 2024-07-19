@@ -14,6 +14,7 @@ jobs:
       RELEASE: ${{ github.run_number }}
       REGISTRY: cr.yandex/registry/app
       GH_TOKEN: ${{ secrets.TOKEN }}
+      GH_REPO: https://github.com/aurls/shri-infra-homework.git
     steps:
       - uses: actions/checkout@v4
 
@@ -34,6 +35,7 @@ jobs:
         run: |
           git config --global user.name "$USER"
           git config --global user.email $USER@gmail.com
+          git remote add origin $GH_REPO
         
       - name: Create tag
         run: |
@@ -56,7 +58,7 @@ jobs:
           echo "**Triggering actor:** $USER  " >> $FILE
           echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
-          git log v$(($RELEASE - 1)) ..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
+          # git log v$(($RELEASE - 1)) ..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           gh issue create --title "Release $RELEASE_ID" --body-file $FILE
           rm $FILE
         env:
@@ -68,7 +70,7 @@ jobs:
           cat $FILE > $TEMP
           touch $FILE
           echo "Version: $RELEASE  " >> $FILE
-          git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
+          # git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           echo "    " >> $FILE
           cat $TEMP >> $FILE
           cat $FILE
@@ -76,3 +78,9 @@ jobs:
         env:
           FILE: CHANGELOG.md
           TEMP: TEMP_CHANGELOG.md
+
+          
+      - name: Push branch and tag to the repo
+        run: |
+          git push origin tag v$RELEASE
+          git push origin release/$RELEASE
