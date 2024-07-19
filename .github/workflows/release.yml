@@ -61,7 +61,7 @@ jobs:
           gh issue create --title "Release $RELEASE" --body-file $FILE
           rm $FILE
         env:
-          FILE: issue.txt
+          FILE: issue_temp.txt
 
       - name: Update CHANGELOG.md
         run: |
@@ -76,6 +76,9 @@ jobs:
           rm $TEMP
           git add $FILE
           git commit -m "chore: update changelog"
+        env:
+          FILE: CHANGELOG.md
+          TEMP: changelog_temp.txt
    
       - name: Push branch and tag to the repo
         run: |
