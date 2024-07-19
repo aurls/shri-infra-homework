@@ -62,7 +62,7 @@ jobs:
           echo "**Triggering actor:** $USER  " >> $FILE
           echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s   " -10 | $FILE
+          git log --pretty=format:"%h - %an, %ar - %s   " -10 >> $FILE
           gh issue create --title "Release $RELEASE" --body-file $FILE
           rm $FILE
         env:
@@ -74,7 +74,7 @@ jobs:
           cat $FILE > $TEMP
           touch $FILE
           echo "Version: $RELEASE  " >> $FILE
-          git log --pretty=format:"%h - %an, %ar - %s   " -10 | $FILE
+          git log --pretty=format:"%h - %an, %ar - %s   " -10 >> $FILE
           echo "    " >> $FILE
           cat $TEMP >> $FILE
           rm $TEMP
