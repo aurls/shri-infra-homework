@@ -1,0 +1,82 @@
+name: fix
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Type release version
+        required: true
+        
+permissions:
+  contents: write
+  issues: write
+  
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    env:
+      USER: ${{ github.triggering_actor }}
+      RUN: ${{ github.run_number }}
+      RELEASE: ${{ github.event.inputs.release }}
+      REGISTRY: cr.yandex/crppuc1m36nfg6701pt4/app
+      GH_TOKEN: ${{ secrets.TOKEN }}
+      
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Update git config
+        run: |
+          git config --global user.name "$USER"
+          git config --global user.email $USER@gmail.com
+          
+      - name: Checkout release branch
+        run: |
+          git checkout release/$RELEASE
+          
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linters and tests
+        run: |
+          npm run lint
+          npm run test
+
+      - name: Create tag
+        run: |
+          git tag -a v$RELEASE_fix$RUN -m "v$RELEASE_fix$RUN"
+          
+      - name: Build Docker image
+        run: |
+          docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_fix${{ env.RUN }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+
+      - name: Push Docker image
+        run: |
+          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+          docker push ${{ env.REGISTRY }}:${{ env.RELEASE }}_fix${{ env.RUN }}
+          docker push ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+          
+      - name: Create GitHub issue
+        run: |
+          touch $FILE
+          echo "**Version:** $RELEASE  " >> $FILE
+          echo "**Date:** $(date +%Y-%m-%d)  " >> $FILE
+          echo "**Triggering actor:** $USER  " >> $FILE
+          echo "**Docker image:** $REGISTRY:$RELEASE_fix$RUN  " >> $FILE
+          echo "**Last commits:**  " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s   " -10 >> $FILE
+          gh issue create --title "Release $RELEASE, fix $RUN" --body-file $FILE
+          rm $FILE
+        env:
+          FILE: issue_temp.txt
+   
+      - name: Push branch and tag to the repo
+        run: |
+          git push origin tag v$RELEASE_fix$RUN
+          git push origin release/$RELEASE
+          
