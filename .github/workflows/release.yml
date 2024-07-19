@@ -3,8 +3,8 @@ name: release
 on: workflow_dispatch
 
 permissions:
-  contents: read
-  issues: write 
+  contents: write
+  issues: write
 
 jobs:
   build:
@@ -46,7 +46,7 @@ jobs:
         
       - name: Build Docker image
         run: |
-          docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+          # docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
 
       - name: Create GitHub issue
         run: |
