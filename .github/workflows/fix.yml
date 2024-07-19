@@ -37,9 +37,7 @@ jobs:
           
       - name: Checkout release branch
         run: |
-          git remote
-          git branch
-          git fetch release/$RELEASE
+          git fetch origin release/$RELEASE
           git checkout release/$RELEASE
           
       - name: Install dependencies
