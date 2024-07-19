@@ -51,7 +51,7 @@ jobs:
       - name: Push Docker image
         run: |
           docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
-          docker push ${{ env.REGISTRY }}:${{ env.RELEASE }} --all-tags
+          docker push ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest --all-tags
           
       - name: Create GitHub issue
         run: |
