@@ -56,6 +56,7 @@ jobs:
           echo "**Triggering actor:** $USER  " >> $FILE
           echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
+          git tag
           git log v$(($RELEASE - 1)) ..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
           gh issue create --title "Release $RELEASE" --body-file $FILE
           rm $FILE
