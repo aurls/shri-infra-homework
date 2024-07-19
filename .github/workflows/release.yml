@@ -12,7 +12,7 @@ jobs:
     env:
       USER: ${{ github.triggering_actor }}
       RELEASE: ${{ github.run_number }}
-      REGISTRY: cr.yandex/registry/app
+      REGISTRY: cr.yandex/crppuc1m36nfg6701pt4/app
       GH_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -46,8 +46,14 @@ jobs:
         
       - name: Build Docker image
         run: |
-          # docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+          docker build . -t ${{ env.REGISTRY }}:${{ env.RELEASE }} -t ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
 
+      - name: Push Docker image
+        run: |
+          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+          docker image list
+          docker push ${{ env.REGISTRY }}:${{ env.RELEASE }}
+          
       - name: Create GitHub issue
         run: |
           touch $FILE
