@@ -57,11 +57,25 @@ jobs:
           echo "**Docker image:** $REGISTRY:$RELEASE  " >> $FILE
           echo "**Last commits:**  " >> $FILE
           git tag
-          git log --pretty=format:"%h - %an, %ar - %s -10   " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s   " -10 >> $FILE
           gh issue create --title "Release $RELEASE" --body-file $FILE
           rm $FILE
         env:
           FILE: issue.txt
+
+      - name: Update CHANGELOG.md
+        run: |
+          touch $TEMP
+          cat $FILE > $TEMP
+          touch $FILE
+          echo "Version: $RELEASE  " >> $FILE
+          # git log v$(($RELEASE - 1))..HEAD --pretty=format:"%h - %an, %ar - %s   " >> $FILE
+          git log --pretty=format:"%h - %an, %ar - %s   " -10 >> $FILE
+          echo "    " >> $FILE
+          cat $TEMP >> $FILE
+          rm $TEMP
+          git add $FILE
+          git commit -m "chore: update changelog"
    
       - name: Push branch and tag to the repo
         run: |
