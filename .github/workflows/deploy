@@ -1,0 +1,48 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Type release version
+        required: true
+        
+permissions:
+  contents: write
+  issues: write
+  
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    env:
+      USER: ${{ github.triggering_actor }}
+      RUN: ${{ github.run_number }}
+      RELEASE: ${{ github.event.inputs.release }}
+      REGISTRY: cr.yandex/crppuc1m36nfg6701pt4/app
+      GH_TOKEN: ${{ secrets.TOKEN }}
+      
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull Docker image
+        run: |
+          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+          docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+          
+      - name: Deploy Docker image
+        run: |
+          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+          docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+          
+      - name: Create GitHub issue
+        run: |
+          touch $FILE
+          echo "**Version:** $RELEASE  " >> $FILE
+          echo "**Date:** $(date +%Y-%m-%d)  " >> $FILE
+          echo "**Triggering actor:** $USER  " >> $FILE
+          echo "**Docker image:** $REGISTRY:$RELEASE_fix$RUN  " >> $FILE
+          gh issue create --title "Version $RELEASE deployment" --body-file $FILE
+          rm $FILE
+        env:
+          FILE: issue_temp.txt
