@@ -25,15 +25,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pull Docker image
-        run: |
-          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
-          docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
-          
+      # - name: Pull Docker image
+      #   run: |
+      #     docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+      #     docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+
       - name: Deploy Docker image
-        run: |
-          docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
-          docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.WM_HOST }}
+          username: ${{ secrets.WM_USERNAME }}
+          password: ${{ secrets.WM_PASSWORD }}
+          script: whoami
+          
+      # - name: Deploy Docker image
+      #   run: |
+      #     docker login --username oauth --password ${{ secrets.YC_LIBRARY }} cr.yandex
+      #     docker pull ${{ env.REGISTRY }}:${{ env.RELEASE }}_latest
           
       - name: Create GitHub issue
         run: |
